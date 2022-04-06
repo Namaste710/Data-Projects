@@ -1,9 +1,9 @@
-name: Pylint
+name: main
 
 on: [push]
 
 jobs:
-  Lint:
+  Build:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -26,3 +26,6 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')
+    - name: Run pytest
+      run: |
+        pytest
