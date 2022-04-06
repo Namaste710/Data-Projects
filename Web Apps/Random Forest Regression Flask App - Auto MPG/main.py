@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 import pickle
-from model_files.functions_preprocessing import predict_y
+from model_files.preprocessing import predict_y
 
 # Initializing Flask app
 app = Flask('app')
