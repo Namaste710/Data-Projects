@@ -1,7 +1,7 @@
 """_summary_"""
 
 
-def inc(x):
+def inc(x_variable):
     """_summary_
 
     Args:
@@ -10,7 +10,7 @@ def inc(x):
     Returns:
         _type_: _description_
     """
-    return x + 1
+    return x_variable + 1
 
 
 def test_answer():
