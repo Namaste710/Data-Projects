@@ -13,7 +13,7 @@ def test():
 # Prediction route
 @app.route('/predict', methods=['POST'])
 def predict():
-    # Getting the input vehicle data as a JSON
+    # Getting the input vehicle data as a JSON ds
     vehicle = request.get_json()
     print(vehicle)
 
