@@ -40,7 +40,9 @@ def preprocess_origin_col(df):
 #         return np.c_[X, acc_on_cyl]
 
 
-def build_num_transform_pipeline(df: pd.DataFrame, imputer=SimpleImputer(strategy="median"), scaler=StandardScaler()) -> tuple[pd.DataFrame, Pipeline]:
+def build_num_transform_pipeline(
+    df: pd.DataFrame, imputer=SimpleImputer(strategy="median"), scaler=StandardScaler()
+) -> tuple[pd.DataFrame, Pipeline]:
     """
 
     Args:
@@ -54,12 +56,7 @@ def build_num_transform_pipeline(df: pd.DataFrame, imputer=SimpleImputer(strateg
 
     numerical_data = df.select_dtypes(include=numerical)
 
-    numerical_pipeline = Pipeline(
-        [
-            ("imputer", imputer),
-            ("scaler", scaler),
-        ]
-    )
+    numerical_pipeline = Pipeline([("imputer", imputer), ("scaler", scaler),])
     return numerical_data, numerical_pipeline
 
 
