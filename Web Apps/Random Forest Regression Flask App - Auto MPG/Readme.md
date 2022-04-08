@@ -1,1 +1,0 @@
-To test the app, just open the Jupyter Notebook 'Testing_predictions.ipynb' and execute it. Of course you can modify the data (more predictions, less predictions, different values etc.)
