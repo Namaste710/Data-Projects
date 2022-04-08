@@ -1,7 +1,7 @@
 """_summary_"""
 
 
-def inc(x_variable):
+def inc(x_variable) -> int:
     """_summary_
 
     Args:
