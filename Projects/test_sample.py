@@ -1,7 +1,7 @@
 """_summary_"""
 
 
-def inc(x_variable) -> int:
+def inc(x_variable: int) -> int:
     """_summary_
 
     Args:
@@ -13,6 +13,6 @@ def inc(x_variable) -> int:
     return x_variable + 1
 
 
-def test_answer():
+def test_answer() -> None:
     """_summary_"""
     assert inc(3) == 4
