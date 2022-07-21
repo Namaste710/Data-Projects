@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import pickle
 from model_files.preprocessing import predict_y
+from model_files.training import model_training, load_data
 
 # Initializing Flask app
 app = Flask('app')
@@ -32,6 +33,9 @@ def predict():
     return jsonify(result)
 
 # Local running of the Flask app
-# if __name__ == '__main__':
-#     app.run(debug=True, host='127.0.0.1', port=5000)
+if __name__ == '__main__':
+    
+    df = load_data("Data-Projects/Web Apps/auto-mpg/model_files/auto-mpg.data")
+    model = model_training(df)
+    app.run(debug=True, host='127.0.0.1', port=5000)
 
