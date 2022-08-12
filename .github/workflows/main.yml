@@ -26,6 +26,11 @@ jobs:
     - name: Analysing the code with black
       run: |
         black --diff --check $(git ls-files '*.py')
+    - name: Analysing the code with flake8
+      run: |
+        flake8 --diff --check $(git ls-files '*.py')
+      with: 
+        max-line-length: "120"
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')

@@ -1,21 +1,24 @@
+"""
+_summary_
+"""
 import numpy as np
 import pandas as pd
-import model_files.preprocessing as pp
+
+import features.preprocessing as pp
+
 from sklearn.linear_model import LinearRegression
+
 from sklearn.model_selection import train_test_split
+
 from sklearn.metrics import mean_squared_error, r2_score
+
 import logging
-logging.getLogger().setLevel(logging.INFO)
 
-def load_data(input_path: str) -> pd.DataFrame:
-    
-    cols = ['MPG','Cylinders','Displacement','Horsepower','Weight', 'Acceleration', 'Model Year', 'Origin']
+import joblib
 
-    # reading the .data file 
-    df = pd.read_csv(input_path, na_values='?', names=cols, comment='\t', sep=' ', skipinitialspace=True)
+from constants import FILE_PATH, MODEL_PATH
 
-    return df
-
+from data.make_data import load_data
 
 def model_training(input_df: pd.DataFrame):
     
@@ -39,6 +42,13 @@ def model_training(input_df: pd.DataFrame):
     logging.info(f"\tR²: {r2_score(y_predict, y_test)}")
 
     return model
-
-
+    
+if __name__ == '__main__':
+    logging.getLogger().setLevel(logging.INFO)
+    
+    df = load_data(FILE_PATH)
+    
+    model = model_training(df)
+    
+    joblib.dump(model, MODEL_PATH)
 

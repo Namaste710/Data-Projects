@@ -1,8 +1,16 @@
+"""
+_summary_
+"""
 from flask import Flask, request, jsonify
+
+from fastapi import FastAPI
+
 import pickle
 from model_files.preprocessing import predict_y
 from model_files.training import model_training, load_data
 
+
+app = FastAPI("MPG predictor")
 # Initializing Flask app
 app = Flask('app')
 
@@ -10,6 +18,19 @@ app = Flask('app')
 @app.route('/test', methods=['GET'])
 def test():
     return 'Ping!'
+
+
+def predict_y(input_data, model):
+
+    if type(input_data) == dict:
+        df = pd.DataFrame(input_data)
+    else:
+        df = input_data
+
+    df = map_origin_col(df)
+    df = full_preproc_ct(df)
+    y_pred = model.predict(df)
+    return y_pred
 
 # Prediction route
 @app.route('/predict', methods=['POST'])
