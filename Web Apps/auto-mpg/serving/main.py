@@ -3,6 +3,7 @@ import joblib
 
 import pandas as pd
 from pydantic import BaseModel
+from pydantic.typing import Literal
 
 from training import preprocessing as pp
 
@@ -16,7 +17,7 @@ class Car(BaseModel):
     Weight: float = None
     Acceleration: float = None
     ModelYear: int = None
-    Origin: int = None
+    Origin: Literal[1, 2, 3]
 
 app = FastAPI()
 
