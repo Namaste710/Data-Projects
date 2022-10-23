@@ -4,12 +4,14 @@ services:
     build:
       context: .
       dockerfile: training/Dockerfile
+    image: auto-mpg-ml-model-training-img:local
     volumes:
       - /app/artifacts:/app/artifacts
   fastapi:
     build:
       context: .
       dockerfile: serving/Dockerfile
+    image: auto-mpg-fastapi-img:local
     ports:
       - "80:80"
     depends_on:
