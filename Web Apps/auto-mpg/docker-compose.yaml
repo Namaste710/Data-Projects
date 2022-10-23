@@ -1,0 +1,17 @@
+---
+
+version: '1'
+
+services:
+  auto-mpg-training-service:
+    volumes:
+    - auto-mpg-model:/app/model_files
+    image: auto-mpg-training-img:local
+    build:
+      dockerfile: Dockerfile
+      context: train
+    hostname: auto-mpg-training-host
+
+volumes:
+  auto-mpg-model:
+

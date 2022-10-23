@@ -16,3 +16,8 @@ repos:
       - id: mypy
         exclude: ^tests/
         args: [--strict]
+  - repo: https://github.com/pycqa/flake8
+    rev: 5.0.4
+    hooks:
+      - id: flake8
+        args: [--max-line-length=120]
