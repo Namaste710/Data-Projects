@@ -30,7 +30,7 @@ jobs:
       run: |
         flake8 --diff --check $(git ls-files '*.py')
       with: 
-        max-line-length: "120"
+        args: "--max-line-length=120"
     - name: Analysing the code with pylint
       run: |
         pylint $(git ls-files '*.py')
