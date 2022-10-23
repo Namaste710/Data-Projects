@@ -1,7 +1,5 @@
-import numpy as np
 import pandas as pd
 
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.impute import SimpleImputer
 
@@ -42,6 +40,11 @@ def num_preproc_pipeline() -> Pipeline:
     return num_pipeline
 
 def cat_preproc_pipeline() -> Pipeline:
+    """_summary_
+
+    Returns:
+        Pipeline: _description_
+    """            
     ohe = OneHotEncoder()
     
     cat_pipeline = Pipeline([("one_hot_encoder", ohe)], 
@@ -74,17 +77,3 @@ def full_preproc_ct(X_input: pd.DataFrame) -> tuple[pd.DataFrame, ColumnTransfor
     preprocessed_data = full_pipeline.fit_transform(X_input)
 
     return preprocessed_data, full_pipeline
-
-
-
-def predict_y(input_data, model):
-
-    if type(input_data) == dict:
-        df = pd.DataFrame(input_data)
-    else:
-        df = input_data
-
-    df = map_origin_col(df)
-    df = full_preproc_ct(df)
-    y_pred = model.predict(df)
-    return y_pred

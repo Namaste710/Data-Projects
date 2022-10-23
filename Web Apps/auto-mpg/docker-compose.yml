@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  ml-model-training:
+    build:
+      context: .
+      dockerfile: training/Dockerfile
+    volumes:
+      - /app/artifacts:/app/artifacts
+  fastapi:
+    build:
+      context: .
+      dockerfile: serving/Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+    - ml-model-training
+    volumes:
+      - /app/artifacts:/app/artifacts

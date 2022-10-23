@@ -1,15 +1,23 @@
 import numpy as np
 import pandas as pd
-import model_files.preprocessing as pp
+import preprocessing as pp
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
+
 import logging
 logging.getLogger().setLevel(logging.INFO)
 
 def load_data(input_path: str) -> pd.DataFrame:
-    
-    cols = ['MPG','Cylinders','Displacement','Horsepower','Weight', 'Acceleration', 'Model Year', 'Origin']
+    """_summary_
+
+    Args:
+        input_path (str): _description_
+
+    Returns:
+        pd.DataFrame: _description_
+    """    
+    cols = ['MPG','Cylinders','Displacement','Horsepower','Weight', 'Acceleration', 'ModelYear', 'Origin']
 
     # reading the .data file 
     df = pd.read_csv(input_path, na_values='?', names=cols, comment='\t', sep=' ', skipinitialspace=True)
@@ -18,7 +26,14 @@ def load_data(input_path: str) -> pd.DataFrame:
 
 
 def model_training(input_df: pd.DataFrame):
-    
+    """_summary_
+
+    Args:
+        input_df (pd.DataFrame): _description_
+
+    Returns:
+        _type_: _description_
+    """    
     input_df = pp.map_origin_col(input_df)
     
     X = input_df.drop("MPG", axis=1)
@@ -38,7 +53,7 @@ def model_training(input_df: pd.DataFrame):
     logging.info(f"\tRMSE: {np.sqrt(mean_squared_error(y_predict, y_test))}")
     logging.info(f"\tR²: {r2_score(y_predict, y_test)}")
 
-    return model
+    return model, full_pl
 
 
 
