@@ -27,7 +27,7 @@ jobs:
       run: |
         black --diff --check $(git ls-files '*.py')
     - name: Analysing the code with flake8
-      run: |
+      uses: |
         flake8 --diff --check $(git ls-files '*.py')
       with: 
         args: "--max-line-length=120"
