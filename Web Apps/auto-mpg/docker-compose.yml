@@ -21,7 +21,7 @@ services:
       /bin/sh -c "
       /usr/bin/mc alias set myminio http://minio-storage:9000 ${MINIO_ROOT_USER-root_user} ${MINIO_ROOT_PASSWORD-root_password};
       /usr/bin/mc mb myminio/${BUCKET_NAME-test-bucket};
-      /usr/bin/mc policy set public myminio/${BUCKET_NAME-test_bucket};
+      /usr/bin/mc policy set public myminio/${BUCKET_NAME-test-bucket};
       exit 0;
       "
 
