@@ -1,7 +1,3 @@
-<<<<<<< HEAD:Web Apps/auto-mpg/training/preprocessing.py
-import pandas as pd
-
-=======
 """
 _summary_
 """
@@ -9,7 +5,6 @@ import pandas as pd
 
 from typing import Tuple
 
->>>>>>> ef6b8ce6b80f8e7166e28fd3d29a73890c2634cd:Web Apps/auto-mpg/train/src/features/preprocessing.py
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.impute import SimpleImputer
 
@@ -86,8 +81,4 @@ def full_preproc_ct(X_input: pd.DataFrame) -> Tuple[pd.DataFrame, ColumnTransfor
     
     preprocessed_data = full_pipeline.fit_transform(X_input)
 
-<<<<<<< HEAD:Web Apps/auto-mpg/training/preprocessing.py
     return preprocessed_data, full_pipeline
-=======
-    return preprocessed_data, full_pipeline
->>>>>>> ef6b8ce6b80f8e7166e28fd3d29a73890c2634cd:Web Apps/auto-mpg/train/src/features/preprocessing.py
