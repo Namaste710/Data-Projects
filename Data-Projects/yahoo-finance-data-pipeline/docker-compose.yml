@@ -1,0 +1,141 @@
+  services:
+    minio:
+      container_name: minio
+      hostname: minio
+      image: minio/minio #:RELEASE.2023-10-24T21-42-22Z.fips
+      ports:
+        - '9000:9000' # API
+        - '9001:9001' # Console
+      volumes:
+        - minio_storage:/data
+      environment:
+        - MINIO_ROOT_USER=${MINIO_ROOT_USER-root_user}
+        - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD-root_password}
+      command: server /data --console-address ":9001"
+      healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
+
+    mc:
+      container_name: mc
+      hostname: mc
+      image: minio/mc
+      environment:
+        - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID-aws_access_key}
+        - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY-aws_secret_key}
+        - AWS_REGION=eu-west-1
+        - MINIO_ROOT_USER=${MINIO_ROOT_USER-root_user}
+        - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD-root_password}
+      entrypoint: >
+        /bin/sh -c "
+        until (/usr/bin/mc config host add minio http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD}) do echo '...waiting...' && sleep 1; done;
+        /usr/bin/mc mb minio/warehouse;
+        /usr/bin/mc policy set public minio/warehouse;
+        exit 0;
+        "
+      depends_on:
+        minio:
+          condition: service_healthy  
+
+    # This service runs the postgres DB used by dagster for run storage, schedule storage,
+    # and event log storage.
+    dagster_postgresql:
+      container_name: dagster_postgresql
+      image: postgres:11
+      environment:
+        POSTGRES_USER: ${POSTGRES_USER-postgres_user}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD-postgres_password}
+        POSTGRES_DB: ${POSTGRES_DB-postgres_db}
+      networks:
+        - dagster_network
+
+    # This service runs the gRPC server that loads your user code, in both dagster-webserver
+    # and dagster-daemon. By setting DAGSTER_CURRENT_IMAGE to its own image, we tell the
+    # run launcher to use this same image when launching runs in a new container as well.
+    # Multiple containers like this can be deployed separately - each just needs to run on
+    # its own port, and have its own entry in the workspace.yaml file that's loaded by the
+    # webserver.
+    dagster_pipeline:
+      container_name: dagster_pipeline
+      image: dagster-pipeline
+      build:
+        context: ./services/dagster/pipeline/
+        dockerfile: Dockerfile
+      restart: always
+      environment:
+        DAGSTER_POSTGRES_USER: ${POSTGRES_USER-postgres_user}
+        DAGSTER_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD-postgres_password}
+        DAGSTER_POSTGRES_DB: ${POSTGRES_DB-postgres_db}
+        DAGSTER_CURRENT_IMAGE: dagster-pipeline
+      networks:
+        - dagster_network
+
+    # This service runs dagster-webserver, which loads your user code from the user code container.
+    # Since our instance uses the QueuedRunCoordinator, any runs submitted from the webserver will be put on
+    # a queue and later dequeued and launched by dagster-daemon.
+    dagster_webserver:
+      container_name: dagster_webserver
+      image: dagster-webserver
+      build:
+        context: ./services/dagster/web-daemon/
+        dockerfile: Dockerfile
+      entrypoint:
+        - dagster-webserver
+        - -h
+        - "0.0.0.0"
+        - -p
+        - "3000"
+        - -w
+        - workspace.yaml
+      
+      expose:
+        - "3000"
+      ports:
+        - "3000:3000"
+      environment:
+        DAGSTER_POSTGRES_USER: ${POSTGRES_USER-postgres_user}
+        DAGSTER_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD-postgres_password}
+        DAGSTER_POSTGRES_DB: ${POSTGRES_DB-postgres_db}
+      volumes: # Make docker client accessible so we can terminate containers from the webserver
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /tmp/io_manager_storage:/tmp/io_manager_storage
+      networks:
+        - dagster_network
+      depends_on:
+        - dagster_postgresql
+        - dagster_pipeline
+
+    # This service runs the dagster-daemon process, which is responsible for taking runs
+    # off of the queue and launching them, as well as creating runs from schedules or sensors.
+    dagster_daemon:
+      container_name: dagster_daemon
+      image: dagster-daemon
+      build:
+        context: ./services/dagster/web-daemon/
+        dockerfile: Dockerfile
+      entrypoint:
+        - dagster-daemon
+        - run
+      restart: on-failure
+      environment:
+        DAGSTER_POSTGRES_USER: ${POSTGRES_USER-postgres_user}
+        DAGSTER_POSTGRES_PASSWORD: ${POSTGRES_PASSWORD-postgres_password}
+        DAGSTER_POSTGRES_DB: ${POSTGRES_DB-postgres_db}
+      volumes: # Make docker client accessible so we can launch containers using host docker
+        - /var/run/docker.sock:/var/run/docker.sock
+        - /tmp/io_manager_storage:/tmp/io_manager_storage
+      networks:
+        - dagster_network
+      depends_on:
+        - dagster_postgresql
+        - dagster_pipeline
+
+  networks:
+    dagster_network:
+      driver: bridge
+      name: dagster_network
+
+  volumes:
+    minio_storage: {}
