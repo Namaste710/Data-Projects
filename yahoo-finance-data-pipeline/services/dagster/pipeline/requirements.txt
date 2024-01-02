@@ -1,7 +1,7 @@
-dagster
-dagster-pipes
-dagster-postgres
-dagster-docker
-pandas
-yfinance
-matplotlib
+dagster==1.5.13
+dagster-pipes==1.5.13
+dagster-postgres==0.21.13
+dagster-docker==0.21.13
+pandas==2.1.4
+yfinance==0.2.33
+matplotlib==3.8.2
